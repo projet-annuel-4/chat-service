@@ -1,4 +1,4 @@
-name: Geteway service CI
+name: Chat service CI
 
 on:
   push:
