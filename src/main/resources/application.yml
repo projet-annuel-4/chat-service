@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: chat-service
+  cloud:
+    config:
+      enabled: false
+  jpa:
+    database-platform : org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      show_sql: true
+      format_sql: true
+      use_sql_comments: false
+      type: all
+      disableConnectionTracking: true
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 5MB
+      file-size-threshold: 2MB
+      enabled: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${SPRING.DATASOURCE.USERNAME}
+    password: ${SPRING.DATASOURCE.PASSWORD}
+    url: ${SPRING.DATASOURCE.URL}
+server:
+  port: 8200
+hostname: localhost:8200
+eureka:
+  client:
+    service-url:
+      default-zone: http://discoveryservice:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${random.uuid}
+
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.assignment: DEBUG
