@@ -1,11 +1,17 @@
 package fr.esgi.chat.data.entity;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "files", indexes = {@Index(name = "i_url", columnList = "url")})
 public class FileEntity {

@@ -23,8 +23,8 @@ public class ChatController {
     private final MessageMapper messageMapper;
 
     @GetMapping
-    public ResponseEntity<List<FriendProfileResponse>> getFriends(@RequestParam(value="from", required = false) String from){
-        return ResponseEntity.ok(friendMapper.getFriends(from));
+    public ResponseEntity<List<FriendProfileResponse>> getFriends(@RequestParam(value="from", required = false) String from,@RequestParam(value="user-email", required = true) String userEmail){
+        return ResponseEntity.ok(friendMapper.getFriends(userEmail,from));
     }
 
     @PostMapping
@@ -33,42 +33,47 @@ public class ChatController {
     }
     @PostMapping("/messages")
     public ResponseEntity<List<MessageResponse>>  getAllMessages(@RequestBody List<Long> ids,
-                                                                 @RequestParam(value="from", required = false) String from){
-        return ResponseEntity.ok(messageMapper.getAllMessages(ids,from));
+                                                                 @RequestParam(value="from", required = false) String from
+            ,@RequestParam(value="user-email", required = true) String userEmail){
+        return ResponseEntity.ok(messageMapper.getAllMessages(userEmail,ids,from));
     }
 
     @PatchMapping("/{cid}/block")
-    public ResponseEntity<FriendProfileResponse> blockUser(@PathVariable("cid")  Long id){
-        return ResponseEntity.ok(friendMapper.blockConversation(id));
+    public ResponseEntity<FriendProfileResponse> blockUser(@PathVariable("cid") Long id,@RequestParam(value="user-email", required = true) String userEmail){
+        return ResponseEntity.ok(friendMapper.blockConversation(userEmail,id));
     }
 
     @PatchMapping("/{cid}/unblock")
-    public ResponseEntity<FriendProfileResponse> unblockUser(@PathVariable("cid")  Long id){
-        return ResponseEntity.ok(friendMapper.unblockConversation(id));
+    public ResponseEntity<FriendProfileResponse> unblockUser(@PathVariable("cid")  Long id,@RequestParam(value="user-email", required = true) String userEmail){
+        return ResponseEntity.ok(friendMapper.unblockConversation(userEmail,id));
     }
     @GetMapping("/{cid}/messages")
     public ResponseEntity<List<MessageResponse>>  getAllMessages(@PathVariable("cid")  Long id,
-                                                                 @RequestParam(value="from", required = false) String from){
-        return ResponseEntity.ok(messageMapper.getMessagesByChat(id,from));
+                                                                 @RequestParam(value="from", required = false) String from
+            ,@RequestParam(value="user-email", required = true) String userEmail){
+        return ResponseEntity.ok(messageMapper.getMessagesByChat(userEmail,id,from));
     }
 
     @PostMapping("/{cid}/messages/text")
     public ResponseEntity<MessageResponse>  createMessageText(@RequestHeader HttpHeaders headers, @PathVariable("cid")  Long id,
-                                                              @RequestParam(value="content", required = false) String content){
+                                                              @RequestParam(value="content", required = false) String content
+            ,@RequestParam(value="user-email", required = true) String userEmail){
         String token = headers.getFirst(HttpHeaders.AUTHORIZATION);
-        return ResponseEntity.ok(messageMapper.createMessage(id,content,emptyList()));
+        return ResponseEntity.ok(messageMapper.createMessage(userEmail,id,content,emptyList()));
     }
 
     @PostMapping(path = "/{cid}/messages/files", consumes = "multipart/form-data")
     public ResponseEntity<MessageResponse>  createMessageFile(@PathVariable("cid")  Long id,
                                                               @RequestParam(value="content", required = false) String content,
-                                                              @RequestParam("files") List<MultipartFile> files){
-        return ResponseEntity.ok(messageMapper.createMessage(id,content,files));
+                                                              @RequestParam("files") List<MultipartFile> files
+            ,@RequestParam(value="user-email", required = true) String userEmail){
+        return ResponseEntity.ok(messageMapper.createMessage(userEmail,id,content,files));
     }
     @PutMapping("/{cid}/messages/read")
     public ResponseEntity<List<MessageResponse>>  readMessage(@RequestBody List<Long> ids,
-                                                              @PathVariable("cid") Long convId){
-        return ResponseEntity.ok(messageMapper.updateMessages(ids,convId));
+                                                              @PathVariable("cid") Long convId
+            ,@RequestParam(value="user-email", required = true) String userEmail){
+        return ResponseEntity.ok(messageMapper.updateMessages(userEmail,ids,convId));
     }
 
 

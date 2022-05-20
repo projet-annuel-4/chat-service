@@ -22,10 +22,10 @@ public class FriendMapper {
         return modelMapper.map(friendModel, FriendProfileResponse.class);
     }
 
-    public List<FriendProfileResponse> getFriends(String from){
+    public List<FriendProfileResponse> getFriends(String userEmail,String from){
         var updatedAfter = LocalDateTime.now();
         if(from != null && !from.isEmpty()) DateTimeUtil.getDateFromString(from);
-        var friends = chatService.getConversations(updatedAfter);
+        var friends = chatService.getConversations(userEmail,updatedAfter);
         return friends.stream().map(this::convertToResponseDto).collect(Collectors.toList());
     }
 
@@ -34,12 +34,12 @@ public class FriendMapper {
         return convertToResponseDto(friend);
     }
 
-    public FriendProfileResponse blockConversation(Long id) {
-        var friend = chatService.blockConversation(id);
+    public FriendProfileResponse blockConversation(String userEmail,Long id) {
+        var friend = chatService.blockConversation(userEmail,id);
         return convertToResponseDto(friend);
     }
-    public FriendProfileResponse unblockConversation(Long id) {
-        var friend = chatService.unblockConversation(id);
+    public FriendProfileResponse unblockConversation(String userEmail,Long id) {
+        var friend = chatService.unblockConversation(userEmail,id);
         return convertToResponseDto(friend);
     }
 

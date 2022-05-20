@@ -1,17 +1,14 @@
-package fr.esgi.chat.dto;
+package fr.esgi.chat.dto.user;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class UserResponse {
+public class UserEvent {
     private Long id;
     private String email;
+    private String password;
     private String firstName;
     private String lastName;
     private String city;

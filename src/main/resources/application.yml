@@ -21,3 +21,14 @@ spring:
       discovery:
         enabled: true
         service-id: config-server
+    stream:
+      kafka:
+        binder:
+          brokers: "localhost:29092"
+          replicationFactor: 1
+      bindings:
+        user-binding-in-0:
+          destination: "user-created"
+          content-type: application/json
+          function:
+            definition: "getCreatedUser"
