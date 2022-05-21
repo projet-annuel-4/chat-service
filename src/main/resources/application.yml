@@ -22,13 +22,13 @@ spring:
         enabled: true
         service-id: config-server
     stream:
+      function:
+        definition: createdUserConsumer
       kafka:
         binder:
           brokers: "localhost:29092"
           replicationFactor: 1
       bindings:
-        user-binding-in-0:
+        createdUserConsumer-in-0:
           destination: "user-created"
           content-type: application/json
-          function:
-            definition: "getCreatedUser"

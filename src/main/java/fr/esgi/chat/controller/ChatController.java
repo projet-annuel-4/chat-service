@@ -17,7 +17,6 @@ import static java.util.Collections.emptyList;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/chat")
 public class ChatController {
     private final FriendMapper friendMapper;
     private final MessageMapper messageMapper;
@@ -56,8 +55,8 @@ public class ChatController {
 
     @PostMapping("/{cid}/messages/text")
     public ResponseEntity<MessageResponse>  createMessageText(@RequestHeader HttpHeaders headers, @PathVariable("cid")  Long id,
-                                                              @RequestParam(value="content", required = false) String content
-            ,@RequestParam(value="user-email", required = true) String userEmail){
+                                                              @RequestParam(value="content", required = false) String content,
+                                                              @RequestParam(value="user-email", required = true) String userEmail){
         String token = headers.getFirst(HttpHeaders.AUTHORIZATION);
         return ResponseEntity.ok(messageMapper.createMessage(userEmail,id,content,emptyList()));
     }
