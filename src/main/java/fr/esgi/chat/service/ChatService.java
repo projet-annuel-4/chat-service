@@ -55,7 +55,8 @@ public class ChatService {
             var profile = friends.get(u.getId());
             return FriendModel
                     .builder()
-                    .id(u.getId())
+                    .id(profile.getId())
+                    .friendId(u.getId())
                     .firstName(u.getFirstName())
                     .lastName(u.getLastName())
                     .email(u.getEmail())
@@ -81,8 +82,8 @@ public class ChatService {
                 .build();
         chatRepository.saveAndFlush(chat);
         simpMessagingTemplate.convertAndSend(NOTIFICATIONS_URL+friend.getId(), new SocketModel<>(SocketType.USER_CONVERSATION_ADDED,
-                new FriendModel(chat.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), null, chat.getBlockedBy())));
-        return new FriendModel(chat.getId(), friend.getEmail(), friend.getFirstName(), friend.getLastName(), friend.getImgUrl(), chat.getBlockedBy());
+                new FriendModel(chat.getId(), user.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), null, chat.getBlockedBy())));
+        return new FriendModel(chat.getId(), user.getId(), friend.getEmail(), friend.getFirstName(), friend.getLastName(), friend.getImgUrl(), chat.getBlockedBy());
 
     }
 
@@ -116,8 +117,8 @@ public class ChatService {
         chatRepository.saveAndFlush(chat);
         var friend = userService.getUserById(Objects.equals(chat.getUser1() , user.getId()) ? chat.getUser2() : chat.getUser1());
         simpMessagingTemplate.convertAndSend(NOTIFICATIONS_URL+friend.getId(), new SocketModel<>(SocketType.USER_CONVERSATION_UPDATED,
-                new FriendModel(chat.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), null, chat.getBlockedBy())));
-        return new FriendModel(chat.getId(), friend.getEmail(), friend.getFirstName(), friend.getLastName(), friend.getImgUrl(), chat.getBlockedBy());
+                new FriendModel(chat.getId(), user.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), null, chat.getBlockedBy())));
+        return new FriendModel(chat.getId(), user.getId(), friend.getEmail(), friend.getFirstName(), friend.getLastName(), friend.getImgUrl(), chat.getBlockedBy());
     }
 
 
