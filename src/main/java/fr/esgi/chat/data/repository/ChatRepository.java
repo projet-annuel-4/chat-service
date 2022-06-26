@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface ChatRepository extends JpaRepository<ChatEntity,Long> {
     List<ChatEntity> findAllByUser1OrUser2AndUpdatedAtAfter(Long user1 , Long user2, LocalDateTime date);
+    List<ChatEntity> findAllByUser1OrUser2(Long user1 , Long user2);
     Optional<ChatEntity> findByUser1AndUser2OrUser1AndUser2(Long user1, Long friend2, Long friend1, Long user2);
 }
