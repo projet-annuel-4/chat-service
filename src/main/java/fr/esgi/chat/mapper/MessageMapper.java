@@ -53,9 +53,13 @@ public class MessageMapper {
         return convertToResponseDto(messageModel);
     }
 
-
     public List<MessageResponse> updateMessages(String userEmail,List<Long> ids, Long convId) {
         var messages = messageService.updateMessages(userEmail,ids,convId);
         return messages.stream().map(this::convertToResponseDto).collect(Collectors.toList());
+    }
+
+    public MessageResponse lastConversationMessage(Long convId) {
+        var lastMessage = messageService.lastConversationMessage(convId);
+        return convertToResponseDto(lastMessage);
     }
 }

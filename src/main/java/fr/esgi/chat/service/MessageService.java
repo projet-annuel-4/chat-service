@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -32,7 +33,6 @@ import static java.util.Collections.emptyList;
 @Service
 @RequiredArgsConstructor
 public class MessageService {
-    private final RestTemplate restTemplate;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
@@ -64,7 +64,7 @@ public class MessageService {
         }
         return emptyList();
     }
-
+    @Transactional
     public MessageModel createMessage(String userEmail,Long chatId, String content, List<FileModel> files, ContentType contentType) {
         var user = userService.getUserByEmail(userEmail);
         var chat = chatRepository.findById(chatId).orElseThrow(() -> new ResourceNotFoundException("Conversation", "id", String.valueOf(chatId)));
@@ -80,6 +80,8 @@ public class MessageService {
                     .read(false)
                     .build();
             messageRepository.saveAndFlush(msg);
+            chat.setUpdatedAt(msg.getCreatedAt());
+            chatRepository.saveAndFlush(chat);
             simpMessagingTemplate.convertAndSend("/notifications/" + (Objects.equals(chat.getUser1(), user.getId()) ? chat.getUser2() : chat.getUser1()),
                     new SocketModel(SocketType.USER_MESSAGE_ADDED, messageDomainMapper.convertToModel(msg)));
             return messageDomainMapper.convertToModel(msg);
@@ -87,7 +89,7 @@ public class MessageService {
             throw new BadRequestException("Sorry you're blocked by user");
         }
     }
-
+    @Transactional
     public List<MessageModel> updateMessages(String userEmail,List<Long> ids, Long chatId) {
         var user = userService.getUserByEmail(userEmail);
         var updatedMessages = new ArrayList<MessageModel>();
@@ -96,6 +98,9 @@ public class MessageService {
         var friendId = Objects.equals(chat.getUser1(), user.getId()) ? chat.getUser2() : chat.getUser1();
         var messages = messageRepository.findAllById(ids).stream().filter(msg->!Objects.equals(msg.getSenderId(),user.getId())).collect(Collectors.toSet());
         messages.stream().map(this::updateMessage).forEach(msg->updatedMessages.add(messageDomainMapper.convertToModel(msg)));
+        messageRepository.saveAllAndFlush(messages);
+        chat.setUpdatedAt(messages.iterator().next().getUpdatedAt());
+        chatRepository.saveAndFlush(chat);
         simpMessagingTemplate.convertAndSend("/notifications/" + friendId,
                 new SocketModel(SocketType.USER_MESSAGE_UPDATED, updatedMessages));
         return updatedMessages;
@@ -105,5 +110,11 @@ public class MessageService {
         message.setUpdatedAt(LocalDateTime.now());
         return message;
     }
-
+    @Transactional
+    public MessageModel lastConversationMessage(Long convId) {
+        var chat = chatRepository.findById(convId).orElseThrow(() -> new ResourceNotFoundException("Conversation", "id", String.valueOf(convId)));
+        var messages = messageRepository.findAllByConversationId(chat.getId());
+        Comparator<MessageModel> comparator = Comparator.comparing( MessageModel::getCreatedAt );
+        return messages.stream().map(messageDomainMapper::convertToModel).max(comparator).get();
+    }
 }

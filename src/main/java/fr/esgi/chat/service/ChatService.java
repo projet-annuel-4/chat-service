@@ -1,6 +1,9 @@
 package fr.esgi.chat.service;
 
 import fr.esgi.chat.data.repository.UserRepository;
+import fr.esgi.chat.domain.mapper.ChatDomainMapper;
+import fr.esgi.chat.domain.model.ChatModel;
+import fr.esgi.chat.domain.model.MessageModel;
 import fr.esgi.chat.exception.ResourceNotFoundException;
 import fr.esgi.chat.data.entity.ChatEntity;
 import fr.esgi.chat.data.repository.ChatRepository;
@@ -17,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,5 +121,14 @@ public class ChatService {
     }
 
 
+    public Set<FriendModel> newGroupConversation(String groupName, Set<String> friendsEmail) {
+        return new HashSet<>();
+    }
 
+    public SortedSet<ChatModel> getOrdredUserConvbersations(String userEmail) {
+        var user = userService.getUserByEmail(userEmail);
+        var chats = chatRepository.findAllByUser1OrUser2(user.getId(),user.getId());
+        Comparator<ChatModel> comparator = Comparator.comparing( ChatModel::getUpdatedAt);
+        return chats.stream().map(ChatDomainMapper::convertToModel).sorted(comparator).collect(Collectors.toCollection(TreeSet::new));
+    }
 }

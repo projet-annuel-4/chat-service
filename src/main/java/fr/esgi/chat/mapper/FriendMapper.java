@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -43,5 +44,9 @@ public class FriendMapper {
         return convertToResponseDto(friend);
     }
 
+    public Set<FriendProfileResponse> newGroupConversation(String groupName, Set<String> friendsEmail) {
+        var friends = chatService.newGroupConversation(groupName,friendsEmail);
+        return friends.stream().map(this::convertToResponseDto).collect(Collectors.toSet());
+    }
 
 }
