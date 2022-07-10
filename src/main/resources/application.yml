@@ -10,7 +10,6 @@ eureka:
       default-zone: http://localhost:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
-
 spring:
   application:
     name: chat-service
@@ -21,3 +20,14 @@ spring:
       discovery:
         enabled: true
         service-id: config-server
+    stream:
+      function:
+        definition: createdUserConsumer
+      kafka:
+        binder:
+          brokers: "localhost:29092"
+          replicationFactor: 1
+      bindings:
+        createdUserConsumer-in-0:
+          destination: "user-created"
+          content-type: application/json

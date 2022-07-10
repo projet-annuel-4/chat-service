@@ -28,34 +28,38 @@ public class MessageMapper {
         return modelMapper.map(messageModel, MessageResponse.class);
     }
 
-    public List<MessageResponse> getAllMessages(List<Long> ids, String from) {
+    public List<MessageResponse> getAllMessages(String userEmail,List<Long> ids, String from) {
         var updatedAfter = LocalDateTime.now();
         if(from != null && !from.isEmpty()) DateTimeUtil.getDateFromString(from);
-        var messages = messageService.getAllMessages(ids,updatedAfter);
+        var messages = messageService.getAllMessages(userEmail,ids,updatedAfter);
         return messages.stream().map(this::convertToResponseDto).collect(Collectors.toList());
     }
 
-    public List<MessageResponse> getMessagesByChat(Long id, String from) {
+    public List<MessageResponse> getMessagesByChat(String userEmail,Long id, String from) {
         var updatedAfter = LocalDateTime.now();
         if(from != null && !from.isEmpty()) DateTimeUtil.getDateFromString(from);
-        var messages = messageService.getMessagesByChat(id,updatedAfter);
+        var messages = messageService.getMessagesByChat(userEmail,id,updatedAfter);
         return messages.stream().map(this::convertToResponseDto).collect(Collectors.toList());
     }
 
-    public MessageResponse createMessage(Long id, String content,List<MultipartFile> files) {
+    public MessageResponse createMessage(String userEmail,Long id, String content,List<MultipartFile> files) {
         MessageModel messageModel;
         if(files.isEmpty()){
-            messageModel = messageService.createMessage(id,content, emptyList(), ContentType.TEXT);
+            messageModel = messageService.createMessage(userEmail,id,content, emptyList(), ContentType.TEXT);
         }else{
             var uploadedFiles = fileStorageService.store(files, id);
-            messageModel = messageService.createMessage(id,content, uploadedFiles, ContentType.FILE);
+            messageModel = messageService.createMessage(userEmail,id,content, uploadedFiles, ContentType.FILE);
         }
         return convertToResponseDto(messageModel);
     }
 
-
-    public List<MessageResponse> updateMessages(List<Long> ids, Long convId) {
-        var messages = messageService.updateMessages(ids,convId);
+    public List<MessageResponse> updateMessages(String userEmail,List<Long> ids, Long convId) {
+        var messages = messageService.updateMessages(userEmail,ids,convId);
         return messages.stream().map(this::convertToResponseDto).collect(Collectors.toList());
+    }
+
+    public MessageResponse lastConversationMessage(Long convId) {
+        var lastMessage = messageService.lastConversationMessage(convId);
+        return convertToResponseDto(lastMessage);
     }
 }

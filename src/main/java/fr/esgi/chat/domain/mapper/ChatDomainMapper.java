@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class ChatDomainMapper {
     private final ModelMapper modelMapper;
 
-    public ChatModel convertToModel(ChatEntity chatEntity){
+    public static ChatModel convertToModel(ChatEntity chatEntity){
         return modelMapper.map(chatEntity,ChatModel.class);
     }
 

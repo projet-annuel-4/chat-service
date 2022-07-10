@@ -1,4 +1,4 @@
-package fr.esgi.chat.domain.model;
+package fr.esgi.chat.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,15 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class FriendModel {
+@AllArgsConstructor
+@Builder
+public class UserResponse {
     private Long id;
-    private Long friendId;
     private String email;
     private String firstName;
     private String lastName;
+    private String city;
+    private String address;
+    private String phoneNumber;
+    private String postIndex;
     private String imgUrl;
-    private Long blockedBy;
 }
