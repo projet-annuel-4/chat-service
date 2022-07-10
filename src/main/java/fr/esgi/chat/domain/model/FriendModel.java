@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FriendModel {
     private Long id;
+    private Long friendId;
     private String email;
     private String firstName;
     private String lastName;
