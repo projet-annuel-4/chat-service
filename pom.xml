@@ -41,6 +41,11 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>software.aws.rds</groupId>
+			<artifactId>aws-postgresql-jdbc</artifactId>
+			<version>0.1.0</version>
+		</dependency>
 		<!--jpa-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -8,48 +8,48 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-          
+
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: maven
-    - name: Cache the Maven packages to speed up build
-      uses: actions/cache@v1
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2      
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+      - name: Cache the Maven packages to speed up build
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
 
-    - name: Build and test project with Maven
-      run: mvn -B clean install -DskipTests --file ./pom.xml
-  
+      - name: Build and test project with Maven
+        run: mvn -B clean install -DskipTests --file ./pom.xml
+
   test:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: maven
-    - name: Cache the Maven packages to speed up build
-      uses: actions/cache@v1
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2      
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+      - name: Cache the Maven packages to speed up build
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
 
-    - name: Build and test project with Maven
-      run: mvn -B test --file ./pom.xml
-      
+      - name: Build and test project with Maven
+        run: mvn -B test --file ./pom.xml
+
   code_quality:
     needs: [test]
     runs-on: ubuntu-latest
@@ -77,14 +77,77 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=projet-annuel-4_chat-service --file ./pom.xml
-        
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=chat-service --file ./pom.xml
+
   package:
-      runs-on: ubuntu-latest
       needs: [code_quality]
+      runs-on: ubuntu-latest
+      permissions:
+        contents: read
+        packages: write
+      outputs:
+        jar_version: ${{ steps.bump.outputs.jar_version }}
+
       steps:
         - uses: actions/checkout@v2
         - uses: actions/setup-java@v1
           with:
             java-version: 11
-        - run: mvn -B package --file ./pom.xml -DskipTests
+            distribution: 'adopt'
+            server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+            settings-path: ${{ github.workspace }} # location for the settings.xml file
+        - name: Bump jar version
+          id: bump
+          run: |
+            OLD_VERSION=$(cd ./ && mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+            echo "$OLD_VERSION"
+            echo ::set-output ${OLD_VERSION}
+            BUMP_MODE="none"
+            old="$OLD_VERSION"
+            parts=( ${old//./ } )
+            bv=$((parts[2] + 1))
+            NEW_VERSION="${parts[0]}.${parts[1]}.${bv}"
+            echo "pom.xml at" ./ "will be bumped from" $OLD_VERSION "to" $NEW_VERSION
+            mvn -q versions:set -DnewVersion="${NEW_VERSION}" --file ./pom.xml
+            echo ::set-output name=jar_version::${NEW_VERSION}
+        - name: Build a package
+          run: mvn -B package --file ./pom.xml -DskipTests
+
+        - name: Temporarily save jar artifact
+          uses: actions/upload-artifact@v2
+          with:
+            name: jar-artifact
+            path: ${{ github.workspace }}/target/*.jar
+            retention-days: 1
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [package]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: download-artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: jar-artifact
+          path: target/
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: api-gateway-service
+          IMAGE_TAG: ${{ needs.package.outputs.jar_version }}
+        run: |
+          ls -la
+          echo ::set-output name=JAR_FIL::${{ needs.package.outputs.jar_version }}
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

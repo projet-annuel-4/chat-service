@@ -6,10 +6,10 @@ FROM openjdk:11-slim as build
 LABEL maintainer="HLimam <heithem.limame@gmail.com>"
 
 # The application's jar file
-ARG JAR_FILE
+#ARG JAR_FILE
 
 # Add the application's jar to the container
-COPY ${JAR_FILE} app.jar
+COPY target/*.jar app.jar
 
 #unpackage jar file
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf /app.jar)
@@ -28,4 +28,4 @@ COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 
 #execute the application
-ENTRYPOINT ["java","-cp","app:app/lib/*","ChatServiceApplication"]
+ENTRYPOINT ["java","-cp","app:app/lib/*","ChatApplication"]
