@@ -2,10 +2,10 @@ package fr.esgi.chat.mapper;
 
 import fr.esgi.chat.domain.model.ContentType;
 import fr.esgi.chat.domain.model.MessageModel;
-import fr.esgi.chat.service.MessageService;
-import fr.esgi.chat.util.DateTimeUtil;
 import fr.esgi.chat.dto.MessageResponse;
 import fr.esgi.chat.service.FileStorageService;
+import fr.esgi.chat.service.MessageService;
+import fr.esgi.chat.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

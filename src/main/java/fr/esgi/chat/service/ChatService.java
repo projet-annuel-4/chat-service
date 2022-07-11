@@ -1,23 +1,19 @@
 package fr.esgi.chat.service;
 
-import fr.esgi.chat.data.repository.UserRepository;
-import fr.esgi.chat.domain.mapper.ChatDomainMapper;
-import fr.esgi.chat.domain.model.ChatModel;
-import fr.esgi.chat.domain.model.MessageModel;
-import fr.esgi.chat.exception.ResourceNotFoundException;
 import fr.esgi.chat.data.entity.ChatEntity;
 import fr.esgi.chat.data.repository.ChatRepository;
+import fr.esgi.chat.domain.mapper.ChatDomainMapper;
+import fr.esgi.chat.domain.model.ChatModel;
 import fr.esgi.chat.domain.model.FriendModel;
 import fr.esgi.chat.domain.socket.SocketModel;
 import fr.esgi.chat.domain.socket.SocketType;
 import fr.esgi.chat.dto.user.UserResponse;
 import fr.esgi.chat.exception.BadRequestException;
-import fr.esgi.chat.mapper.UserMapper;
+import fr.esgi.chat.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -31,6 +27,7 @@ public class ChatService {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatRepository chatRepository;
     private final UserService userService;;
+    private final ChatDomainMapper chatDomainMapper;;
 
     @Transactional
     public List<FriendModel> getConversations(String userEmail,LocalDateTime date) {
@@ -130,6 +127,6 @@ public class ChatService {
         var user = userService.getUserByEmail(userEmail);
         var chats = chatRepository.findAllByUser1OrUser2(user.getId(),user.getId());
         Comparator<ChatModel> comparator = Comparator.comparing( ChatModel::getUpdatedAt);
-        return chats.stream().map(ChatDomainMapper::convertToModel).sorted(comparator).collect(Collectors.toCollection(TreeSet::new));
+        return chats.stream().map(chatDomainMapper::convertToModel).sorted(comparator).collect(Collectors.toCollection(TreeSet::new));
     }
 }

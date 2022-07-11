@@ -1,8 +1,8 @@
 package fr.esgi.chat.domain.mapper;
 
 
-import fr.esgi.chat.domain.model.MessageModel;
 import fr.esgi.chat.data.entity.MessageEntity;
+import fr.esgi.chat.domain.model.MessageModel;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

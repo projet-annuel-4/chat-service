@@ -3,9 +3,6 @@ package fr.esgi.chat.data.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.security.AuthProvider;
-import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @Entity

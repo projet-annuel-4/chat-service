@@ -1,9 +1,9 @@
 package fr.esgi.chat.mapper;
 
+import fr.esgi.chat.domain.model.FriendModel;
 import fr.esgi.chat.dto.FriendProfileResponse;
 import fr.esgi.chat.service.ChatService;
 import fr.esgi.chat.util.DateTimeUtil;
-import fr.esgi.chat.domain.model.FriendModel;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

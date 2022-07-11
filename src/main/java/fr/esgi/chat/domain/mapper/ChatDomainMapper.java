@@ -1,7 +1,7 @@
 package fr.esgi.chat.domain.mapper;
 
-import fr.esgi.chat.domain.model.ChatModel;
 import fr.esgi.chat.data.entity.ChatEntity;
+import fr.esgi.chat.domain.model.ChatModel;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class ChatDomainMapper {
     private final ModelMapper modelMapper;
 
-    public static ChatModel convertToModel(ChatEntity chatEntity){
+    public ChatModel convertToModel(ChatEntity chatEntity){
         return modelMapper.map(chatEntity,ChatModel.class);
     }
 

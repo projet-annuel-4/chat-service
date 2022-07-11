@@ -1,8 +1,5 @@
 package fr.esgi.chat.service;
 
-import fr.esgi.chat.data.repository.UserRepository;
-import fr.esgi.chat.domain.model.MessageModel;
-import fr.esgi.chat.exception.ResourceNotFoundException;
 import fr.esgi.chat.data.entity.MessageEntity;
 import fr.esgi.chat.data.repository.ChatRepository;
 import fr.esgi.chat.data.repository.MessageRepository;
@@ -10,16 +7,15 @@ import fr.esgi.chat.domain.mapper.FileDomainMapper;
 import fr.esgi.chat.domain.mapper.MessageDomainMapper;
 import fr.esgi.chat.domain.model.ContentType;
 import fr.esgi.chat.domain.model.FileModel;
+import fr.esgi.chat.domain.model.MessageModel;
 import fr.esgi.chat.domain.socket.SocketModel;
 import fr.esgi.chat.domain.socket.SocketType;
-import fr.esgi.chat.dto.user.UserResponse;
 import fr.esgi.chat.exception.BadRequestException;
-import fr.esgi.chat.mapper.UserMapper;
+import fr.esgi.chat.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
