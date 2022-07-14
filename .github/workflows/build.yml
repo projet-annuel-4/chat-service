@@ -106,7 +106,7 @@ jobs:
             old="$OLD_VERSION"
             parts=( ${old//./ } )
             bv=$((parts[2] + 1))
-            NEW_VERSION="${parts[0]}.${parts[1]}.${bv}"
+            NEW_VERSION="latest"
             echo "pom.xml at" ./ "will be bumped from" $OLD_VERSION "to" $NEW_VERSION
             mvn -q versions:set -DnewVersion="${NEW_VERSION}" --file ./pom.xml
             echo ::set-output name=jar_version::${NEW_VERSION}
