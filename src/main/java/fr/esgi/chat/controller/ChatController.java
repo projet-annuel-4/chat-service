@@ -21,6 +21,7 @@ import static java.util.Collections.emptyList;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/chat")
 public class ChatController {
     private final FriendMapper friendMapper;
     private final MessageMapper messageMapper;
