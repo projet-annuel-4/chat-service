@@ -28,8 +28,8 @@ public class ChatController {
     private final ChatMapper chatMapper;
 
     @GetMapping
-    public ResponseEntity<List<FriendProfileResponse>> getFriends(@RequestParam(value="from", required = false) String from,@RequestParam(value="user-email", required = true) String userEmail){
-        return ResponseEntity.ok(friendMapper.getFriends(userEmail,from));
+    public ResponseEntity<List<FriendProfileResponse>> getFriends(@RequestParam(value="user-email", required = true) String userEmail){
+        return ResponseEntity.ok(friendMapper.getFriends(userEmail));
     }
 
     @PostMapping
@@ -42,9 +42,8 @@ public class ChatController {
     }
     @PostMapping("/messages")
     public ResponseEntity<List<MessageResponse>>  getAllMessages(@RequestBody List<Long> ids,
-                                                                 @RequestParam(value="from", required = false) String from
-            ,@RequestParam(value="user-email", required = true) String userEmail){
-        return ResponseEntity.ok(messageMapper.getAllMessages(userEmail,ids,from));
+            @RequestParam(value="user-email", required = true) String userEmail){
+        return ResponseEntity.ok(messageMapper.getAllMessages(userEmail,ids));
     }
 
     @PatchMapping("/{cid}/block")
@@ -58,9 +57,8 @@ public class ChatController {
     }
     @GetMapping("/{cid}/messages")
     public ResponseEntity<List<MessageResponse>>  getAllMessages(@PathVariable("cid")  Long id,
-                                                                 @RequestParam(value="from", required = false) String from
-            ,@RequestParam(value="user-email", required = true) String userEmail){
-        return ResponseEntity.ok(messageMapper.getMessagesByChat(userEmail,id,from));
+            @RequestParam(value="user-email", required = true) String userEmail){
+        return ResponseEntity.ok(messageMapper.getMessagesByChat(userEmail,id));
     }
 
     @PostMapping("/{cid}/messages/text")

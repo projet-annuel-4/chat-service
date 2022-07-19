@@ -28,17 +28,13 @@ public class MessageMapper {
         return modelMapper.map(messageModel, MessageResponse.class);
     }
 
-    public List<MessageResponse> getAllMessages(String userEmail,List<Long> ids, String from) {
-        var updatedAfter = LocalDateTime.now();
-        if(from != null && !from.isEmpty()) DateTimeUtil.getDateFromString(from);
-        var messages = messageService.getAllMessages(userEmail,ids,updatedAfter);
+    public List<MessageResponse> getAllMessages(String userEmail,List<Long> ids) {
+        var messages = messageService.getAllMessages(userEmail,ids);
         return messages.stream().map(this::convertToResponseDto).collect(Collectors.toList());
     }
 
-    public List<MessageResponse> getMessagesByChat(String userEmail,Long id, String from) {
-        var updatedAfter = LocalDateTime.now();
-        if(from != null && !from.isEmpty()) DateTimeUtil.getDateFromString(from);
-        var messages = messageService.getMessagesByChat(userEmail,id,updatedAfter);
+    public List<MessageResponse> getMessagesByChat(String userEmail,Long id) {
+        var messages = messageService.getMessagesByChat(userEmail,id);
         return messages.stream().map(this::convertToResponseDto).collect(Collectors.toList());
     }
 

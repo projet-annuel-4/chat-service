@@ -30,11 +30,11 @@ public class ChatService {
     private final ChatDomainMapper chatDomainMapper;;
 
     @Transactional
-    public List<FriendModel> getConversations(String userEmail,LocalDateTime date) {
+    public List<FriendModel> getConversations(String userEmail) {
         var user = userService.getUserByEmail(userEmail);
         var friends = new HashMap<Long, ChatEntity>();
         var users = new ArrayList<UserResponse>();
-        var chats = chatRepository.findAllByUser1OrUser2AndUpdatedAtAfter(user.getId(), user.getId(), date);
+        var chats = chatRepository.findAllByUser1OrUser2(user.getId(), user.getId());
 
         chats.forEach(chat->{
             if (Objects.equals(chat.getUser1(),user.getId())){

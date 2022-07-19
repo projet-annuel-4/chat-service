@@ -37,13 +37,13 @@ public class MessageService {
     private final UserService userService;
 
     @Transactional
-    public List<MessageModel> getAllMessages(String userEmail,List<Long> ids, LocalDateTime updatedAt) {
+    public List<MessageModel> getAllMessages(String userEmail,List<Long> ids) {
         var user = userService.getUserByEmail(userEmail);
         var msgs = new ArrayList<MessageModel>();
         var chats = chatRepository.findAllById(ids);
         chats.forEach(chat -> {
             if (Objects.equals(chat.getUser1(), user.getId()) || Objects.equals(chat.getUser2(), user.getId())) {
-                var conversations = messageRepository.findAllByConversationIdAndUpdatedAtAfter(chat.getId(), updatedAt);
+                var conversations = messageRepository.findAllByConversationId(chat.getId());
                 conversations.stream().map(messageDomainMapper::convertToModel).forEach(msgs::add);
             }
         });
@@ -51,11 +51,11 @@ public class MessageService {
     }
 
     @Transactional
-    public List<MessageModel> getMessagesByChat(String userEmail,Long id, LocalDateTime updatedAt) {
+    public List<MessageModel> getMessagesByChat(String userEmail,Long id) {
         var user = userService.getUserByEmail(userEmail);
         var chat = chatRepository.findById(id);
         if (chat.isPresent() && (Objects.equals(chat.get().getUser1(), user.getId()) || Objects.equals(chat.get().getUser2(), user.getId()))) {
-            var conversations = messageRepository.findAllByConversationIdAndUpdatedAtAfter(id, updatedAt);
+            var conversations = messageRepository.findAllByConversationId(id);
             return conversations.stream().map(messageDomainMapper::convertToModel).collect(Collectors.toList());
         }
         return emptyList();
