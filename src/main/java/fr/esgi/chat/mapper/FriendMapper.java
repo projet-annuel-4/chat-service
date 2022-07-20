@@ -23,10 +23,8 @@ public class FriendMapper {
         return modelMapper.map(friendModel, FriendProfileResponse.class);
     }
 
-    public List<FriendProfileResponse> getFriends(String userEmail,String from){
-        var updatedAfter = LocalDateTime.now();
-        if(from != null && !from.isEmpty()) DateTimeUtil.getDateFromString(from);
-        var friends = chatService.getConversations(userEmail,updatedAfter);
+    public List<FriendProfileResponse> getFriends(String userEmail){
+        var friends = chatService.getConversations(userEmail);
         return friends.stream().map(this::convertToResponseDto).collect(Collectors.toList());
     }
 
