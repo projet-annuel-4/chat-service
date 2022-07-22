@@ -15,7 +15,7 @@ spring:
   cloud:
     stream:
       function:
-        definition: createdUserConsumer
+        definition: createdUserConsumer,createdGroupConsumer
       kafka:
         binder:
           brokers: ${KAFKA_URL}
@@ -24,6 +24,9 @@ spring:
         createdUserConsumer-in-0:
           destination: "user-created"
           content-type: application/json
+      createdGroupConsumer-in-0:
+        destination: "group-created"
+        content-type: application/json
   servlet:
     multipart:
       max-request-size: 10MB
