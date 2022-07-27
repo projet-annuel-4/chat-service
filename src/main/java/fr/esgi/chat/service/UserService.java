@@ -1,6 +1,6 @@
 package fr.esgi.chat.service;
 
-import fr.esgi.chat.data.entity.User;
+import fr.esgi.chat.data.entity.UserEntity;
 import fr.esgi.chat.data.repository.UserRepository;
 import fr.esgi.chat.dto.user.UserEvent;
 import fr.esgi.chat.dto.user.UserResponse;
@@ -16,7 +16,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public User createUser(UserEvent userEvent) {
+    public UserEntity createUser(UserEvent userEvent) {
         var user = userMapper.convertToEntity(userEvent);
         return userRepository.save(user);
     }
