@@ -32,6 +32,6 @@ public class CreatedGroupConsumer implements Consumer<Message<GroupEvent>> {
                 messageHeaders.get(KafkaHeaders.OFFSET, Long.class),
                 messageHeaders.get(IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT, AtomicInteger.class));
         var group = groupService.createGroup(groupEvent);
-        log.info("Group with id {} saved.", groupEvent.getId());
+        log.info("Group with id {} created.", groupEvent.getId());
     }
 }
