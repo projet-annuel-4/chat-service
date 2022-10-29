@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
-    private static final String NOTIFICATIONS_URL="/notifications/";
+    private static final String NOTIFICATIONS_URL = "/notifications/";
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatRepository chatRepository;
-    private final UserService userService;;
-    private final ChatDomainMapper chatDomainMapper;;
+    private final UserService userService;
+    private final ChatDomainMapper chatDomainMapper;
 
     @Transactional
     public List<FriendModel> getConversations(String userEmail) {
@@ -36,8 +36,8 @@ public class ChatService {
         var users = new ArrayList<UserResponse>();
         var chats = chatRepository.findAllByUser1OrUser2(user.getId(), user.getId());
 
-        chats.forEach(chat->{
-            if (Objects.equals(chat.getUser1(),user.getId())){
+        chats.forEach(chat -> {
+            if (Objects.equals(chat.getUser1(), user.getId())) {
                 friends.put(chat.getUser2(), chat);
                 users.add(userService.getUserById(chat.getUser2()));
             }
@@ -123,10 +123,20 @@ public class ChatService {
         return new HashSet<>();
     }
 
+    @Transactional
     public SortedSet<ChatModel> getOrdredUserConvbersations(String userEmail) {
         var user = userService.getUserByEmail(userEmail);
-        var chats = chatRepository.findAllByUser1OrUser2(user.getId(),user.getId());
-        Comparator<ChatModel> comparator = Comparator.comparing( ChatModel::getUpdatedAt);
+        var chats = chatRepository.findAllByUser1OrUser2(user.getId(), user.getId());
+        Comparator<ChatModel> comparator = Comparator.comparing(ChatModel::getUpdatedAt);
         return chats.stream().map(chatDomainMapper::convertToModel).sorted(comparator).collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    @Transactional
+    public FriendModel getFriendConversation(Long userId, Long friendId) {
+        var user = userService.getUserById(userId);
+        var friend = userService.getUserById(friendId);
+        var chat = chatRepository.findByUser1AndUser2OrUser1AndUser2(user.getId(), friend.getId(), friend.getId(), user.getId())
+                .orElseThrow(() -> new BadRequestException("No conversation exist between users."));
+        return new FriendModel(chat.getId(), user.getId(), friend.getEmail(), friend.getFirstName(), friend.getLastName(), friend.getImgUrl(), chat.getBlockedBy());
     }
 }

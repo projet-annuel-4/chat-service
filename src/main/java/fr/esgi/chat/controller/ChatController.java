@@ -28,20 +28,29 @@ public class ChatController {
     private final ChatMapper chatMapper;
 
     @GetMapping
-    public ResponseEntity<List<FriendProfileResponse>> getFriends(@RequestParam(value="user-email", required = true) String userEmail){
+    public ResponseEntity<List<FriendProfileResponse>> getFriends(@RequestParam(value = "user-email", required = true) String userEmail) {
         return ResponseEntity.ok(friendMapper.getFriends(userEmail));
     }
 
+    @GetMapping("/conversation")
+    public ResponseEntity<FriendProfileResponse> getFriendConversation(@RequestParam(value = "userId", required = true) Long userId,
+                                                                       @RequestParam(value = "friendId", required = true) Long friendId
+    ) {
+        return ResponseEntity.ok(friendMapper.getFriendConversation(userId, friendId));
+    }
+
     @PostMapping
-    public ResponseEntity<FriendProfileResponse> startConversation(@RequestParam(value="user-email", required = true) String userEmail,@RequestParam(value="friend-email", required = true) String friendEmail){
-        return ResponseEntity.ok(friendMapper.newConversation(userEmail,friendEmail));
+    public ResponseEntity<FriendProfileResponse> startConversation(@RequestParam(value = "user-email", required = true) String userEmail, @RequestParam(value = "friend-email", required = true) String friendEmail) {
+        return ResponseEntity.ok(friendMapper.newConversation(userEmail, friendEmail));
     }
+
     @PostMapping("/group")
-    public ResponseEntity<Set<FriendProfileResponse>> startGroupConversation(@RequestParam(value="group-name", required = true) String groupName,@RequestParam(value="friend-email", required = true) Set<String> friendsEmail){
-        return ResponseEntity.ok(friendMapper.newGroupConversation(groupName,friendsEmail));
+    public ResponseEntity<Set<FriendProfileResponse>> startGroupConversation(@RequestParam(value = "group-name", required = true) String groupName, @RequestParam(value = "friend-email", required = true) Set<String> friendsEmail) {
+        return ResponseEntity.ok(friendMapper.newGroupConversation(groupName, friendsEmail));
     }
+
     @PostMapping("/messages")
-    public ResponseEntity<List<MessageResponse>>  getAllMessages(@RequestBody List<Long> ids,
+    public ResponseEntity<List<MessageResponse>> getAllMessages(@RequestBody List<Long> ids,
             @RequestParam(value="user-email", required = true) String userEmail){
         return ResponseEntity.ok(messageMapper.getAllMessages(userEmail,ids));
     }
@@ -92,4 +101,5 @@ public class ChatController {
     public ResponseEntity<SortedSet<ChatResponse>> getOrdredUserConvbersations(@RequestParam(value="user-email", required = true) String userEmail){
         return ResponseEntity.ok(chatMapper.getOrdredUserConvbersations(userEmail));
     }
+
 }

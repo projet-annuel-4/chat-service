@@ -3,12 +3,10 @@ package fr.esgi.chat.mapper;
 import fr.esgi.chat.domain.model.FriendModel;
 import fr.esgi.chat.dto.FriendProfileResponse;
 import fr.esgi.chat.service.ChatService;
-import fr.esgi.chat.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,14 +35,19 @@ public class FriendMapper {
         var friend = chatService.blockConversation(userEmail,id);
         return convertToResponseDto(friend);
     }
-    public FriendProfileResponse unblockConversation(String userEmail,Long id) {
-        var friend = chatService.unblockConversation(userEmail,id);
+
+    public FriendProfileResponse unblockConversation(String userEmail, Long id) {
+        var friend = chatService.unblockConversation(userEmail, id);
         return convertToResponseDto(friend);
     }
 
     public Set<FriendProfileResponse> newGroupConversation(String groupName, Set<String> friendsEmail) {
-        var friends = chatService.newGroupConversation(groupName,friendsEmail);
+        var friends = chatService.newGroupConversation(groupName, friendsEmail);
         return friends.stream().map(this::convertToResponseDto).collect(Collectors.toSet());
     }
 
+    public FriendProfileResponse getFriendConversation(Long userId, Long friendId) {
+        var friend = chatService.getFriendConversation(userId, friendId);
+        return convertToResponseDto(friend);
+    }
 }
